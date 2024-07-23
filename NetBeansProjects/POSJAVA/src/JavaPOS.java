@@ -1,24 +1,23 @@
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 public class JavaPOS extends javax.swing.JFrame {
 
     private POSLogic posLogic;
-    private JFrame frame;
-    
 
     public JavaPOS(POSLogic posLogic) {
         this.posLogic = posLogic;
         initComponents();
+        DatabaseInitializer.initializeDatabase();
     }
 
     public JavaPOS() {
         this.posLogic = new POSLogic();
         initComponents();
+        DatabaseInitializer.initializeDatabase();
     }
 
     public void setTableName(String tableName) {
@@ -27,6 +26,9 @@ public class JavaPOS extends javax.swing.JFrame {
 
     @SuppressWarnings("unchecked")
     private void initComponents() {
+        
+        
+
         jPanel1 = new javax.swing.JPanel();
         jbtnLevainCookies = new javax.swing.JButton();
         jbtnDBLCheeseBurger = new javax.swing.JButton();
@@ -554,16 +556,8 @@ public class JavaPOS extends javax.swing.JFrame {
 
         pack();
         setLocationRelativeTo(null);
-    }// </editor-fold>
-
-        private void jbtnExitActionPerformed(java.awt.event.ActionEvent evt) {
-        frame = new JFrame("Exit");
-        if (JOptionPane.showConfirmDialog(frame, "Confirm if you want to exit", "Point of Sale",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            System.exit(0);
-        }
     }
-    
+
     private void Change() {
         double sum = 0;
         String input = jtxtDisplay.getText();
@@ -707,33 +701,49 @@ public class JavaPOS extends javax.swing.JFrame {
         jtxtBarCode.setText("");
     }                                         
 
-    private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {                                        
-        if (jcboPayment.getSelectedItem().equals("Cash"))
+private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
+    if (jcboPayment.getSelectedItem().equals("Cash")) {
+        Change();
+    } else {
+        jtxtChange.setText("");
+        jtxtDisplay.setText("");
+    }
+    posLogic.saveOrderToDatabase(jTable1, getTitle());  // Save order to the database
+}
+                                  
+
+private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {                                          
+    try {
+        // Reemplazar comas con puntos antes de convertir a double
+        Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
+        Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
+        Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
+
+        // Generar el archivo HTML
+        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total);
+
+        // Abrir el archivo HTML en el navegador predeterminado
+        Desktop.getDesktop().browse(new File("table.html").toURI());
+    } catch (IOException e) {
+        e.printStackTrace();
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Error: El formato de los números es incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
+
+    private JFrame frame;
+    private void jbtnExitActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        
+        frame = new JFrame("Exit");
+        if(JOptionPane.showConfirmDialog(frame,"Confirm if you want to exit","Point of Sale", 
+                                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION)
         {
-            Change();
+            System.exit(0);
         }
-        else
-        {
-            jtxtChange.setText("");
-            jtxtDisplay.setText("");
-        }
-    }                                       
-
-    private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {
-        try {
-            Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
-            Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
-            Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
-
-            htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total);
-
-            Desktop.getDesktop().browse(new File("table.html").toURI());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error: Formato de número inválido", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }                                    
+            
+    }                                        
 
     private void jbtnRemoveActionPerformed(java.awt.event.ActionEvent evt) {                                           
   DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -1444,6 +1454,28 @@ public class JavaPOS extends javax.swing.JFrame {
     private javax.swing.JTextField jtxtTotal;
     // End of variables declaration                   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*

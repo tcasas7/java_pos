@@ -187,9 +187,10 @@ public class JavaSections extends javax.swing.JFrame {
         });
     }
 
-    private javax.swing.JButton jbtnExit;
+    // Variables declaration
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JButton jbtnTable1;
-    private javax.swing.JButton jbtnTable10;
     private javax.swing.JButton jbtnTable2;
     private javax.swing.JButton jbtnTable3;
     private javax.swing.JButton jbtnTable4;
@@ -198,10 +199,10 @@ public class JavaSections extends javax.swing.JFrame {
     private javax.swing.JButton jbtnTable7;
     private javax.swing.JButton jbtnTable8;
     private javax.swing.JButton jbtnTable9;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JButton jbtnTable10;
+    private javax.swing.JButton jbtnExit;
+    // End of variables declaration
 }
-
 
 
 
