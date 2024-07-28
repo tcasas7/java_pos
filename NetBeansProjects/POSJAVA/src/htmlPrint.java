@@ -5,7 +5,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableModel;
 
 public class htmlPrint {
-    public static void generateHtmlFile(JTable table, String fileName, Double subTotal, Double tax, Double total) {
+    public static void generateHtmlFile(JTable table, String fileName, Double subTotal, Double tax, Double total, String paymentMethod) {
         TableModel model = table.getModel();
         int rowCount = model.getRowCount();
         int columnCount = model.getColumnCount();
@@ -59,11 +59,21 @@ public class htmlPrint {
             writer.write("<td colspan='" + (columnCount - 1) + "' class='subtotal'>Total:</td>");
             writer.write("<td class='subtotal currency'>" + total + "</td>");
             writer.write("</tr>");
+
+            writer.write("<tr>");
+            writer.write("<td colspan='" + (columnCount - 1) + "' class='subtotal'>Payment Method:</td>");
+            writer.write("<td class='subtotal'>" + paymentMethod + "</td>");
+            writer.write("</tr>");
+
             writer.write("</table>");
 
             writer.write("</body></html>");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static void generateHtmlFile(JTable jTable1, String tablehtml, Double subTotal, Double tax, Double total) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

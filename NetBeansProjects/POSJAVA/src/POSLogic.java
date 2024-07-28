@@ -48,6 +48,32 @@ public class POSLogic {
             e.printStackTrace();
         }
     }
+    
+        public void removeItemFromDatabase(String itemName) {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "DELETE FROM orders WHERE item_name = ?";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, itemName);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void clearDatabase() {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String query = "DELETE FROM orders";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void saveOrderToDatabase(String tableName, String itemName, int quantity, double price) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
 }
 
 

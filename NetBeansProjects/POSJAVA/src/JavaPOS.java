@@ -690,17 +690,73 @@ public class JavaPOS extends javax.swing.JFrame {
         }
     }                                     
 
-    private void jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {                                          
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
-        jtxtChange.setText("");
+private void jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {                                          
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    model.setRowCount(0);
+    posLogic.clearDatabase();  // Eliminar todos los productos de la base de datos
+    jtxtChange.setText("");
+    jtxtTax.setText("");
+    jtxtTotal.setText("");
+    jtxtSubTotal.setText("");
+    jtxtDisplay.setText("");
+    jtxtBarCode.setText("");
+}
+           
+
+private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
+    try {
+        double totalAmount = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
+        String paymentMethod = jcboPayment.getSelectedItem().toString();
+        boolean isCashPayment = false;
+
+        if (paymentMethod.equals("Cash")) {
+            Change();
+            isCashPayment = true;
+        } else if (paymentMethod.equals("Visa Card")) {
+            jtxtChange.setText("Pagado con Visa");
+            jtxtDisplay.setText("");
+        } else if (paymentMethod.equals("Master Card")) {
+            jtxtChange.setText("Pagado con MasterCard");
+            jtxtDisplay.setText("");
+        } else {
+            throw new IllegalArgumentException("Método de pago no soportado: " + paymentMethod);
+        }
+
+        // Guardar orden en la base de datos
+        posLogic.saveOrderToDatabase(jTable1, getTitle());
+
+        // Imprimir el recibo
+        printReceipt(totalAmount, paymentMethod);
+
+        // Limpiar la tabla y los campos de texto
+        DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
+        tableModel.setRowCount(0);
         jtxtTax.setText("");
         jtxtTotal.setText("");
         jtxtSubTotal.setText("");
-        jtxtDisplay.setText("");
         jtxtBarCode.setText("");
-    }                                         
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Error al procesar el total: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
+private void printReceipt(double totalAmount, String paymentMethod) {
+    try {
+        double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
+        double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
+        
+        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, totalAmount, paymentMethod);
+        
+        Desktop.getDesktop().browse(new File("table.html").toURI());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+
+
+
+/*
 private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
     if (jcboPayment.getSelectedItem().equals("Cash")) {
         Change();
@@ -710,7 +766,7 @@ private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
     }
     posLogic.saveOrderToDatabase(jTable1, getTitle());  // Save order to the database
 }
-                                  
+ */                                 
 
 private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {                                          
     try {
@@ -745,22 +801,24 @@ private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {
             
     }                                        
 
-    private void jbtnRemoveActionPerformed(java.awt.event.ActionEvent evt) {                                           
-  DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow >= 0) {
-            posLogic.removeItem(model, selectedRow);
-            ItemCost();
-            if (jcboPayment.getSelectedItem().equals("Cash")) {
-                Change();
-            } else {
-                jtxtChange.setText("");
-                jtxtDisplay.setText("");
-            }
+private void jbtnRemoveActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    int selectedRow = jTable1.getSelectedRow();
+    if (selectedRow >= 0) {
+        String itemName = model.getValueAt(selectedRow, 0).toString();
+        posLogic.removeItemFromDatabase(itemName);  // Eliminar de la base de datos
+        posLogic.removeItem(model, selectedRow);    // Eliminar de la tabla
+        ItemCost();
+        if (jcboPayment.getSelectedItem().equals("Cash")) {
+            Change();
         } else {
-            JOptionPane.showMessageDialog(null, "No item selected", "Error", JOptionPane.ERROR_MESSAGE);
+            jtxtChange.setText("");
+            jtxtDisplay.setText("");
         }
-    }                                          
+    } else {
+        JOptionPane.showMessageDialog(null, "No item selected", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}                                         
 
     private void jbtn7ActionPerformed(java.awt.event.ActionEvent evt) {                                      
         
