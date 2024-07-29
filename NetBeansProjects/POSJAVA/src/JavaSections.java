@@ -1,5 +1,4 @@
-import javax.swing.*;
-import java.awt.*;
+
 
 public class JavaSections extends javax.swing.JFrame {
 

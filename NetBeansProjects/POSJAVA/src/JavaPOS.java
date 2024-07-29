@@ -704,17 +704,7 @@ private void jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {
            
 
 
-/*
-private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
-    if (jcboPayment.getSelectedItem().equals("Cash")) {
-        Change();
-    } else {
-        jtxtChange.setText("");
-        jtxtDisplay.setText("");
-    }
-    posLogic.saveOrderToDatabase(jTable1, getTitle());  // Save order to the database
-}
- */                                 
+                            
 
 private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
     String paymentMethod = jcboPayment.getSelectedItem().toString();
@@ -724,21 +714,21 @@ private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
     } else {
         jtxtChange.setText("");
         jtxtDisplay.setText("");
-    }
 
-    // Guardar la orden en la base de datos
-    posLogic.saveOrderToDatabase(jTable1, getTitle());
+        // Guardar la orden en la base de datos
+        posLogic.saveOrderToDatabase(jTable1, getTitle());
 
-    // Generar el recibo de la orden
-    Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
-    Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
-    Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
+        // Generar el recibo de la orden
+        Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
+        Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
+        Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
 
-    try {
-        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total, paymentMethod);
-        Desktop.getDesktop().browse(new File("table.html").toURI());
-    } catch (IOException e) {
-        e.printStackTrace();
+        try {
+            htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total, paymentMethod);
+            Desktop.getDesktop().browse(new File("table.html").toURI());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
