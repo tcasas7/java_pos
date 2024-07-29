@@ -703,58 +703,6 @@ private void jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {
 }
            
 
-private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
-    try {
-        double totalAmount = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
-        String paymentMethod = jcboPayment.getSelectedItem().toString();
-        boolean isCashPayment = false;
-
-        if (paymentMethod.equals("Cash")) {
-            Change();
-            isCashPayment = true;
-        } else if (paymentMethod.equals("Visa Card")) {
-            jtxtChange.setText("Pagado con Visa");
-            jtxtDisplay.setText("");
-        } else if (paymentMethod.equals("Master Card")) {
-            jtxtChange.setText("Pagado con MasterCard");
-            jtxtDisplay.setText("");
-        } else {
-            throw new IllegalArgumentException("Método de pago no soportado: " + paymentMethod);
-        }
-
-        // Guardar orden en la base de datos
-        posLogic.saveOrderToDatabase(jTable1, getTitle());
-
-        // Imprimir el recibo
-        printReceipt(totalAmount, paymentMethod);
-
-        // Limpiar la tabla y los campos de texto
-        DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
-        tableModel.setRowCount(0);
-        jtxtTax.setText("");
-        jtxtTotal.setText("");
-        jtxtSubTotal.setText("");
-        jtxtBarCode.setText("");
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Error al procesar el total: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-
-private void printReceipt(double totalAmount, String paymentMethod) {
-    try {
-        double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
-        double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
-        
-        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, totalAmount, paymentMethod);
-        
-        Desktop.getDesktop().browse(new File("table.html").toURI());
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}
-
-
-
 
 /*
 private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
@@ -768,24 +716,47 @@ private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
 }
  */                                 
 
-private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {                                          
+private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
+    String paymentMethod = jcboPayment.getSelectedItem().toString();
+    
+    if (paymentMethod.equals("Cash")) {
+        Change();
+    } else {
+        jtxtChange.setText("");
+        jtxtDisplay.setText("");
+    }
+
+    // Guardar la orden en la base de datos
+    posLogic.saveOrderToDatabase(jTable1, getTitle());
+
+    // Generar el recibo de la orden
+    Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
+    Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
+    Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
+
     try {
-        // Reemplazar comas con puntos antes de convertir a double
-        Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
-        Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
-        Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
-
-        // Generar el archivo HTML
-        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total);
-
-        // Abrir el archivo HTML en el navegador predeterminado
+        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total, paymentMethod);
         Desktop.getDesktop().browse(new File("table.html").toURI());
     } catch (IOException e) {
         e.printStackTrace();
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Error: El formato de los números es incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
+
+private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {
+    String paymentMethod = jcboPayment.getSelectedItem().toString();
+
+    Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
+    Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
+    Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
+
+    try {
+        htmlPrint.generateHtmlFile(jTable1, "table.html", subTotal, tax, total, paymentMethod);
+        Desktop.getDesktop().browse(new File("table.html").toURI());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
 
 
 

@@ -33,7 +33,7 @@ public class htmlPrint {
                 writer.write("<tr>");
                 for (int column = 0; column < columnCount; column++) {
                     if (column == 2) { // Aplicar estilo currency (símbolo $) a la columna Amount
-                        writer.write("<td class='currency'>" + model.getValueAt(row, column) + "</td>");
+                        writer.write("<td class='currency'>" + model.getValueAt(row, column).toString().replace(",", ".") + "</td>");
                     } else {
                         writer.write("<td>" + model.getValueAt(row, column) + "</td>");
                     }
@@ -47,33 +47,27 @@ public class htmlPrint {
             writer.write("<table border='1'>");
             writer.write("<tr>");
             writer.write("<td colspan='" + (columnCount - 1) + "' class='subtotal'>Subtotal:</td>");
-            writer.write("<td class='subtotal currency'>" + subTotal + "</td>");
+            writer.write("<td class='subtotal currency'>" + subTotal.toString().replace(",", ".") + "</td>");
             writer.write("</tr>");
 
             writer.write("<tr>");
             writer.write("<td colspan='" + (columnCount - 1) + "' class='subtotal'>Tax:</td>");
-            writer.write("<td class='subtotal currency'>" + tax + "</td>");
+            writer.write("<td class='subtotal currency'>" + tax.toString().replace(",", ".") + "</td>");
             writer.write("</tr>");
 
             writer.write("<tr>");
             writer.write("<td colspan='" + (columnCount - 1) + "' class='subtotal'>Total:</td>");
-            writer.write("<td class='subtotal currency'>" + total + "</td>");
+            writer.write("<td class='subtotal currency'>" + total.toString().replace(",", ".") + "</td>");
             writer.write("</tr>");
-
             writer.write("<tr>");
             writer.write("<td colspan='" + (columnCount - 1) + "' class='subtotal'>Payment Method:</td>");
             writer.write("<td class='subtotal'>" + paymentMethod + "</td>");
             writer.write("</tr>");
-
             writer.write("</table>");
 
             writer.write("</body></html>");
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    static void generateHtmlFile(JTable jTable1, String tablehtml, Double subTotal, Double tax, Double total) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
