@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class JavaPOS extends javax.swing.JFrame {
-
     private POSLogic posLogic;
 
     public JavaPOS(POSLogic posLogic) {
@@ -1471,7 +1470,7 @@ private void jbtnRemoveActionPerformed(java.awt.event.ActionEvent evt) {
     private javax.swing.JTextField jtxtSubTotal;
     private javax.swing.JTextField jtxtTax;
     private javax.swing.JTextField jtxtTotal;
-    // End of variables declaration                   
+                    
 }
 
 
