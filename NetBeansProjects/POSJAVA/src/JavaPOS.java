@@ -23,6 +23,10 @@ public class JavaPOS extends javax.swing.JFrame {
         setTitle("JavaPOS - " + tableName);
     }
 
+   private OrderDatabaseManager orderDatabaseManager = new OrderDatabaseManager();
+
+
+    
     @SuppressWarnings("unchecked")
     private void initComponents() {
         
@@ -689,22 +693,20 @@ public class JavaPOS extends javax.swing.JFrame {
         }
     }                                     
 
-private void jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {                                          
+private void jbtnResetActionPerformed(java.awt.event.ActionEvent evt) {
     DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
     model.setRowCount(0);
-    posLogic.clearDatabase();  // Eliminar todos los productos de la base de datos
     jtxtChange.setText("");
     jtxtTax.setText("");
     jtxtTotal.setText("");
     jtxtSubTotal.setText("");
     jtxtDisplay.setText("");
     jtxtBarCode.setText("");
-}
-           
 
-
+    // Limpia la base de datos
+    orderDatabaseManager.clearDatabase();
+}    
                             
-
 private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
     String paymentMethod = jcboPayment.getSelectedItem().toString();
     
@@ -713,11 +715,15 @@ private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
     } else {
         jtxtChange.setText("");
         jtxtDisplay.setText("");
+    }
 
-        // Guardar la orden en la base de datos
-        posLogic.saveOrderToDatabase(jTable1, getTitle());
+    // Instancia de la clase OrderDatabaseManager para manejar operaciones de base de datos
+    OrderDatabaseManager dbOps = new OrderDatabaseManager();
+    // Guardar la orden en la base de datos para todos los métodos de pago
+    dbOps.saveOrderToDatabase(jTable1, getTitle());
 
-        // Generar el recibo de la orden
+    // Si se paga con tarjeta, generar el recibo y abrir el archivo HTML
+    if (!paymentMethod.equals("Cash")) {
         Double subTotal = Double.parseDouble(jtxtSubTotal.getText().replace("$", "").replace(",", ".").trim());
         Double tax = Double.parseDouble(jtxtTax.getText().replace("$", "").replace(",", ".").trim());
         Double total = Double.parseDouble(jtxtTotal.getText().replace("$", "").replace(",", ".").trim());
@@ -730,6 +736,8 @@ private void jbtnPayActionPerformed(java.awt.event.ActionEvent evt) {
         }
     }
 }
+
+
 
 private void jbtnPrintActionPerformed(java.awt.event.ActionEvent evt) {
     String paymentMethod = jcboPayment.getSelectedItem().toString();
@@ -766,7 +774,7 @@ private void jbtnRemoveActionPerformed(java.awt.event.ActionEvent evt) {
     int selectedRow = jTable1.getSelectedRow();
     if (selectedRow >= 0) {
         String itemName = model.getValueAt(selectedRow, 0).toString();
-        posLogic.removeItemFromDatabase(itemName);  // Eliminar de la base de datos
+        orderDatabaseManager.removeItemFromDatabase(itemName);  // Eliminar de la base de datos
         posLogic.removeItem(model, selectedRow);    // Eliminar de la tabla
         ItemCost();
         if (jcboPayment.getSelectedItem().equals("Cash")) {
@@ -778,7 +786,8 @@ private void jbtnRemoveActionPerformed(java.awt.event.ActionEvent evt) {
     } else {
         JOptionPane.showMessageDialog(null, "No item selected", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}                                         
+}   
+                                 
 
     private void jbtn7ActionPerformed(java.awt.event.ActionEvent evt) {                                      
         
